@@ -120,7 +120,7 @@ function App() {
     SHOW_BACKGROUND: false
   });
 
-  const claimNFTs = () => {
+  const claimNFTs = async () => {
     let cost = CONFIG.WEI_COST;
     let gasLimit = CONFIG.GAS_LIMIT;
     let totalCostWei = String(cost * mintAmount);
@@ -129,14 +129,22 @@ function App() {
     console.log('Gas limit: ', totalGasLimit);
     setFeedback(`Minting your ${CONFIG.NFT_NAME}...`);
     setClaimingNft(true);
+    const totalFree = await blockchain.smartContract.methods
+      .TOTAL_FREE()
+      .call();
+    console.log('is free mint happening?: ', data.totalSupply <= totalFree);
+    const sendDetail = {
+      gasLimit: String(totalGasLimit),
+      to: CONFIG.CONTRACT_ADDRESS,
+      from: blockchain.account,
+      value: totalCostWei
+    };
+    if (data.totalSupply <= totalFree) delete sendDetail.value;
+    console.log(sendDetail)
+
     blockchain.smartContract.methods
       .mint(mintAmount)
-      .send({
-        gasLimit: String(totalGasLimit),
-        to: CONFIG.CONTRACT_ADDRESS,
-        from: blockchain.account,
-        value: totalCostWei
-      })
+      .send(sendDetail)
       .once('error', (err) => {
         console.log(err);
         setFeedback('Sorry, something went wrong please try again later.');
@@ -162,8 +170,8 @@ function App() {
 
   const incrementMintAmount = () => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 10) {
-      newMintAmount = 10;
+    if (newMintAmount > 5) {
+      newMintAmount = 5;
     }
     setMintAmount(newMintAmount);
   };
