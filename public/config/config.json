@@ -8,7 +8,7 @@
   },
   "NFT_NAME": "Test Mfers",
   "SYMBOL": "TMfer",
-  "MAX_SUPPLY": 6969,
+  "MAX_SUPPLY": 888,
   "WEI_COST": 5500000000000000,
   "DISPLAY_COST": 0.0055,
   "GAS_LIMIT": 285000,
